@@ -41,17 +41,27 @@ public class TaskManager
     /// Busca uma tarefa pelo identificador.
     /// </summary>
     /// <param name="id">Identificador da tarefa.</param>
-    /// <returns>A tarefa correspondente ao <paramref name="id"/>.</returns>
-    /// <exception cref="KeyNotFoundException">Lançada quando não existe tarefa com o id informado.</exception>
-    public TaskItem GetById(Guid id) => _tasks[id];
+    /// <returns>
+    /// A tarefa correspondente ao <paramref name="id"/> ou <c>null</c> quando
+    /// não existe nenhuma tarefa com esse identificador.
+    /// </returns>
+    public TaskItem? GetById(Guid id) => _tasks.TryGetValue(id, out var task) ? task : null;
 
     /// <summary>
     /// Alterna o status (pendente/concluída) da tarefa identificada por <paramref name="id"/>.
     /// </summary>
-    /// <returns>O novo status da tarefa (<c>true</c> = concluída).</returns>
-    public bool ToggleTask(Guid id)
+    /// <returns>
+    /// O novo status da tarefa (<c>true</c> = concluída, <c>false</c> = pendente)
+    /// ou <c>null</c> quando não existe tarefa com o id informado.
+    /// </returns>
+    public bool? ToggleTask(Guid id)
     {
         var task = GetById(id);
+        if (task is null)
+        {
+            return null;
+        }
+
         return task.ToggleCompletion();
     }
 

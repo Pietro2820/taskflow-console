@@ -102,11 +102,22 @@ public class TaskManagerTests
     }
 
     [Fact]
-    public void GetById_WithUnknownId_ShouldThrowKeyNotFoundException()
+    public void GetById_WithUnknownId_ShouldReturnNull()
     {
-        // Comportamento atual (bug conhecido): quando o id não existe,
-        // o método propaga uma KeyNotFoundException não tratada.
-        Assert.Throws<KeyNotFoundException>(() => _manager.GetById(Guid.NewGuid()));
+        // Teste de regressão do bug corrigido: antes o método propagava uma
+        // KeyNotFoundException não tratada quando o id não existia.
+        var found = _manager.GetById(Guid.NewGuid());
+
+        Assert.Null(found);
+    }
+
+    [Fact]
+    public void ToggleTask_WithUnknownId_ShouldReturnNullAndNotThrow()
+    {
+        var result = _manager.ToggleTask(Guid.NewGuid());
+
+        Assert.Null(result);
+        Assert.Equal(0, _manager.Count);
     }
 
     [Fact]
